@@ -11,12 +11,6 @@ X = readmatrix('../data/Feature_for_Classification_N270_LowDim.csv','Delimiter',
 y = readmatrix('../data/Female_Male_for_Classification_N270_LowDim.csv','Delimiter',',');
 V = readmatrix('../data/BrainVolume_for_Classification_N270_LowDim.csv','Delimiter',',');
 
-% Connectome relationships of high-dimensional model fitting
-% ----------------------------------------------------------
-% Xh = readmatrix('../data/Feature_for_Classification_N270_HighDim.csv','Delimiter',',');
-% yh = readmatrix('../data/Female_Male_for_Classification_N270_HighDim.csv','Delimiter',',');
-% Vh = readmatrix('../data/BrainVolume_for_Classification_N270_HighDim.csv','Delimiter',',');
-
 % PCA
 % ---
 % COEFF: Loadning for [PC1, PC2, PC3, PC4]
@@ -29,27 +23,39 @@ featureCond = {'EMP','SIM','EMPSIM'};
 dimCond = ["LowDim","HighDim"];
 for nCond = 1:numel(featureCond)
     for nDimCond = 1:2
-        temp_accu_test  = readmatrix(sprintf('../classification/HCP_N270_%s_NestedCV_%s_ACCURACY_TEST.txt',dimCond(nDimCond),featureCond{nCond}),'Delimiter',' ');
-        temp_accu_train = readmatrix(sprintf('../classification/HCP_N270_%s_NestedCV_%s_ACCURACY_TRAIN.txt',dimCond(nDimCond),featureCond{nCond}),'Delimiter',' ');
-        eval(sprintf('DATA.%s.%s_ACCURACY_TEST = temp_accu_test;',featureCond{nCond},dimCond(nDimCond)));
-        eval(sprintf('DATA.%s.%s_ACCURACY_TRAIN = temp_accu_train;',featureCond{nCond},dimCond(nDimCond)));
+        if nCond == 1 && nDimCond == 2
+            fprintf('Skip %s, %s\n',featureCond{nCond},dimCond(nDimCond));
+        else
+            temp_accu_test  = readmatrix(sprintf('../classification/HCP_N270_%s_NestedCV_%s_ACCURACY_TEST.txt',dimCond(nDimCond),featureCond{nCond}),'Delimiter',' ');
+            temp_accu_train = readmatrix(sprintf('../classification/HCP_N270_%s_NestedCV_%s_ACCURACY_TRAIN.txt',dimCond(nDimCond),featureCond{nCond}),'Delimiter',' ');
+            eval(sprintf('DATA.%s.%s_ACCURACY_TEST = temp_accu_test;',featureCond{nCond},dimCond(nDimCond)));
+            eval(sprintf('DATA.%s.%s_ACCURACY_TRAIN = temp_accu_train;',featureCond{nCond},dimCond(nDimCond)));
+        end
     end
 end
-for nCond = 1:numel(featureCond)
+for nCond = 1:3 %numel(featureCond)
     for nDimCond = 1:2
-        temp_r_test     = readmatrix(sprintf('../prediction/HCP_N268_%s_NestedCV_CORR_COG_%s_PEARSON_R_TEST.txt',dimCond(nDimCond),featureCond{nCond}),'Delimiter',' ');
-        temp_r_train    = readmatrix(sprintf('../prediction/HCP_N268_%s_NestedCV_CORR_COG_%s_PEARSON_R_TRAIN.txt',dimCond(nDimCond),featureCond{nCond}),'Delimiter',' ');
-        eval(sprintf('DATA.%s.%s_COG_PEARSON_R_TEST = temp_r_test;',featureCond{nCond},dimCond(nDimCond)));
-        eval(sprintf('DATA.%s.%s_COG_PEARSON_R_TRAIN = temp_r_train;',featureCond{nCond},dimCond(nDimCond)));
+        if any([nCond == 1 & nDimCond == 2, nCond == 3 & nDimCond == 2])
+            fprintf('Skip %s, %s\n',featureCond{nCond},dimCond(nDimCond));
+        else
+            temp_r_test     = readmatrix(sprintf('../prediction/HCP_N268_%s_NestedCV_CORR_COG_%s_PEARSON_R_TEST.txt',dimCond(nDimCond),featureCond{nCond}),'Delimiter',' ');
+            temp_r_train    = readmatrix(sprintf('../prediction/HCP_N268_%s_NestedCV_CORR_COG_%s_PEARSON_R_TRAIN.txt',dimCond(nDimCond),featureCond{nCond}),'Delimiter',' ');
+            eval(sprintf('DATA.%s.%s_COG_PEARSON_R_TEST = temp_r_test;',featureCond{nCond},dimCond(nDimCond)));
+            eval(sprintf('DATA.%s.%s_COG_PEARSON_R_TRAIN = temp_r_train;',featureCond{nCond},dimCond(nDimCond)));
+        end
     end
 end
-for nCond = 1:numel(featureCond)
+for nCond = 1:2 % numel(featureCond)
     for nDimCond = 1:2
-        for nTest = 1:5
-            temp_r_test  = readmatrix(sprintf('../prediction/HCP_N269_%s_NestedCV_CORR_%s_%s_PEARSON_R_TEST.txt',dimCond(nDimCond),test_str(nTest),featureCond{nCond}),'Delimiter',' ');
-            temp_r_train = readmatrix(sprintf('../prediction/HCP_N269_%s_NestedCV_CORR_%s_%s_PEARSON_R_TRAIN.txt',dimCond(nDimCond),test_str(nTest),featureCond{nCond}),'Delimiter',' ');
-            eval(sprintf('DATA.%s.%s_%s_PEARSON_R_TEST = temp_r_test;',featureCond{nCond},dimCond(nDimCond),test_str(nTest)));
-            eval(sprintf('DATA.%s.%s_%s_PEARSON_R_TRAIN = temp_r_train;',featureCond{nCond},dimCond(nDimCond),test_str(nTest)));
+        if nCond == 1 && nDimCond == 2
+                fprintf('Skip %s, %s\n',featureCond{nCond},dimCond(nDimCond));
+        else
+            for nTest = 1:5
+                temp_r_test  = readmatrix(sprintf('../prediction/HCP_N269_%s_NestedCV_CORR_%s_%s_PEARSON_R_TEST.txt',dimCond(nDimCond),test_str(nTest),featureCond{nCond}),'Delimiter',' ');
+                temp_r_train = readmatrix(sprintf('../prediction/HCP_N269_%s_NestedCV_CORR_%s_%s_PEARSON_R_TRAIN.txt',dimCond(nDimCond),test_str(nTest),featureCond{nCond}),'Delimiter',' ');
+                eval(sprintf('DATA.%s.%s_%s_PEARSON_R_TEST = temp_r_test;',featureCond{nCond},dimCond(nDimCond),test_str(nTest)));
+                eval(sprintf('DATA.%s.%s_%s_PEARSON_R_TRAIN = temp_r_train;',featureCond{nCond},dimCond(nDimCond),test_str(nTest)));
+            end
         end
     end
 end
@@ -175,7 +181,6 @@ annotation(fig,'line', [0.845,0.86],[0.888,0.888]-0.06, 'color', 'k', 'linewidth
 annotation(fig,'line', [0.850,0.86],[0.855,0.855]-0.06, 'color', 'k', 'linewidth', 1);
 annotation(fig,'line', [0.860,0.86],[0.888,0.855]-0.06, 'color', 'k', 'linewidth', 1);
 annotation(fig,'textbox',[0.859,0.866-0.06,0.01,0.01],'string','Sim.','edgecolor','none','fontsize',14,'fontweight','n','horizontalalignment','left','VerticalAlignment','middle');
-
 
 % Figure 2b
 % ---------
@@ -711,3 +716,172 @@ annotation(fig,'textbox',[0.704,0.428,0.01,0.01],'string','Means','edgecolor','n
 % Save
 set(fig,'Resize','on','PaperPositionMode','auto','PaperUnits','points','PaperSize',fig.Position([3,4]) + 1);drawnow;
 % saveas(fig,'./figure5.pdf');
+%% Figure 6
+colors = load('./RdBu_colormap.txt');
+
+% Predictors
+% ----------
+F = [];
+F.high_p = readmatrix('../data/Feature_for_Personality_N269_HighDim.csv','Delimiter',',');
+F.low_p  = readmatrix('../data/Feature_for_Personality_N269_LowDim.csv','Delimiter',',');
+F.high_i = readmatrix('../data/Feature_for_CogTotalComp_Unadj_N268_HighDim.csv','Delimiter',',');
+F.low_i  = readmatrix('../data/Feature_for_CogTotalComp_Unadj_N268_LowDim.csv','Delimiter',',');
+F.high_c = readmatrix('../data/Feature_for_Classification_N270_HighDim.csv','Delimiter',',');
+F.low_c  = readmatrix('../data/Feature_for_Classification_N270_LowDim.csv','Delimiter',',');
+
+% SHAP values
+% -----------
+DATA_SHAP = [];
+test_str = ["Personal_A","Personal_C","Personal_E","Personal_N","Personal_O"];
+featureCond = {'EMP','SIM','SIM'};
+dimCond = ["LowDim","LowDim","HighDim"];
+for nCond = 1:3
+    for nTest = 1:5
+        temp_r_beta    = readmatrix(sprintf('../prediction/HCP_N269_%s_NestedCV_CORR_%s_%s_BETA.txt',dimCond(nCond),test_str(nTest),featureCond{nCond}),'Delimiter',' ');
+        temp_idx       = readmatrix(sprintf('../prediction/HCP_N269_%s_NestedCV_CORR_%s_%s_CV_TRAIN_INDEX.txt',dimCond(nCond),test_str(nTest),featureCond{nCond}),'Delimiter',' ');
+        temp_r         = readmatrix(sprintf('../prediction/HCP_N269_%s_NestedCV_CORR_%s_%s_PEARSON_R_TEST.txt',dimCond(nCond),test_str(nTest),featureCond{nCond}),'Delimiter',' ');
+        temp_shap      = readmatrix(sprintf('../prediction/HCP_N269_%s_NestedCV_CORR_%s_%s_SHAP_SUBJECT.txt',dimCond(nCond),test_str(nTest),featureCond{nCond}),'Delimiter',' ');
+        temp_shap_base = readmatrix(sprintf('../prediction/HCP_N269_%s_NestedCV_CORR_%s_%s_SHAP_BASE.txt',dimCond(nCond),test_str(nTest),featureCond{nCond}),'Delimiter',' ');
+        eval(sprintf('DATA_SHAP.%s.%s_%s_BETA = temp_r_beta;',featureCond{nCond},dimCond(nCond),test_str(nTest)));
+        eval(sprintf('DATA_SHAP.%s.%s_%s_INDEX = temp_idx;',featureCond{nCond},dimCond(nCond),test_str(nTest)));
+        eval(sprintf('DATA_SHAP.%s.%s_%s_R_TEST = temp_r;',featureCond{nCond},dimCond(nCond),test_str(nTest)));
+        eval(sprintf('DATA_SHAP.%s.%s_%s_SHAP = temp_shap;',featureCond{nCond},dimCond(nCond),test_str(nTest)));
+        eval(sprintf('DATA_SHAP.%s.%s_%s_SHAP_BASE = temp_shap_base;',featureCond{nCond},dimCond(nCond),test_str(nTest)));
+    end
+    temp_r_beta    = readmatrix(sprintf('../prediction/HCP_N268_%s_NestedCV_CORR_COG_%s_BETA.txt',dimCond(nCond),featureCond{nCond}),'Delimiter',' ');
+    temp_idx       = readmatrix(sprintf('../prediction/HCP_N268_%s_NestedCV_CORR_COG_%s_CV_TRAIN_INDEX.txt',dimCond(nCond),featureCond{nCond}),'Delimiter',' ');
+    temp_r         = readmatrix(sprintf('../prediction/HCP_N268_%s_NestedCV_CORR_COG_%s_PEARSON_R_TEST.txt',dimCond(nCond),featureCond{nCond}),'Delimiter',' ');
+    temp_shap      = readmatrix(sprintf('../prediction/HCP_N268_%s_NestedCV_CORR_COG_%s_SHAP_SUBJECT.txt',dimCond(nCond),featureCond{nCond}),'Delimiter',' ');
+    temp_shap_base = readmatrix(sprintf('../prediction/HCP_N268_%s_NestedCV_CORR_COG_%s_SHAP_BASE.txt',dimCond(nCond),featureCond{nCond}),'Delimiter',' ');
+    eval(sprintf('DATA_SHAP.%s.%s_COG_BETA = temp_r_beta;',featureCond{nCond},dimCond(nCond)));
+    eval(sprintf('DATA_SHAP.%s.%s_COG_INDEX = temp_idx;',featureCond{nCond},dimCond(nCond)));
+    eval(sprintf('DATA_SHAP.%s.%s_COG_R_TEST = temp_r;',featureCond{nCond},dimCond(nCond)));
+    eval(sprintf('DATA_SHAP.%s.%s_COG_SHAP = temp_shap;',featureCond{nCond},dimCond(nCond)));
+    eval(sprintf('DATA_SHAP.%s.%s_COG_SHAP_BASE = temp_shap_base;',featureCond{nCond},dimCond(nCond)));
+
+    temp_r_beta    = readmatrix(sprintf('../classification/HCP_N270_%s_NestedCV_%s_BETA.txt',dimCond(nCond),featureCond{nCond}),'Delimiter',' ');
+    temp_idx       = readmatrix(sprintf('../classification/HCP_N270_%s_NestedCV_%s_CV_TRAIN_INDEX.txt',dimCond(nCond),featureCond{nCond}),'Delimiter',' ');
+    temp_accu      = readmatrix(sprintf('../classification/HCP_N270_%s_NestedCV_%s_ACCURACY_TEST.txt',dimCond(nCond),featureCond{nCond}),'Delimiter',' ');
+    temp_shap      = readmatrix(sprintf('../classification/HCP_N270_%s_NestedCV_%s_SHAP_SUBJECT.txt',dimCond(nCond),featureCond{nCond}),'Delimiter',' ');
+    temp_shap_base = readmatrix(sprintf('../classification/HCP_N270_%s_NestedCV_%s_SHAP_BASE.txt',dimCond(nCond),featureCond{nCond}),'Delimiter',' ');
+    eval(sprintf('DATA_SHAP.%s.%s_Classification_BETA = temp_r_beta;',featureCond{nCond},dimCond(nCond)));
+    eval(sprintf('DATA_SHAP.%s.%s_Classification_INDEX = temp_idx;',featureCond{nCond},dimCond(nCond)));
+    eval(sprintf('DATA_SHAP.%s.%s_Classification_ACCU_TEST = temp_accu;',featureCond{nCond},dimCond(nCond)));
+    eval(sprintf('DATA_SHAP.%s.%s_Classification_SHAP = temp_shap;',featureCond{nCond},dimCond(nCond)));
+    eval(sprintf('DATA_SHAP.%s.%s_Classification_SHAP_BASE = temp_shap_base;',featureCond{nCond},dimCond(nCond)));
+end
+clear temp* dimCond featureCond nCond nTest test_str
+%% SHAP, beeswarm
+D = [];
+% mean(DATA_SHAP.EMP.LowDim_Classification_ACCU_TEST(:,3))
+% mean(DATA_SHAP.SIM.LowDim_Classification_ACCU_TEST(:,3))
+% mean(DATA_SHAP.SIM.HighDim_Classification_ACCU_TEST(:,3)) -> best
+D{7}.SHAP = DATA_SHAP.SIM.HighDim_Classification_SHAP;
+D{7}.SHAP_BASE = DATA_SHAP.SIM.HighDim_Classification_SHAP_BASE;
+D{7}.str = "Sim. (High dim.)";
+D{7}.target = "Sex classification";
+D{7}.feature = F.high_c(:,[3,4]);
+% mean(DATA_SHAP.EMP.LowDim_COG_R_TEST(:,3))
+% mean(DATA_SHAP.SIM.LowDim_COG_R_TEST(:,3)) -> best
+% mean(DATA_SHAP.SIM.HighDim_COG_R_TEST(:,3))
+D{6}.SHAP = DATA_SHAP.SIM.LowDim_COG_SHAP;
+D{6}.SHAP_BASE = DATA_SHAP.SIM.LowDim_COG_SHAP_BASE;
+D{6}.str = "Sim. (Low dim.)";
+D{6}.target = "Cognition";
+D{6}.feature = F.low_i(:,[3,4]);
+% mean(DATA_SHAP.EMP.LowDim_Personal_A_R_TEST(:,3))
+% mean(DATA_SHAP.SIM.LowDim_Personal_A_R_TEST(:,3))
+% mean(DATA_SHAP.SIM.HighDim_Personal_A_R_TEST(:,3)) -> best
+D{5}.SHAP = DATA_SHAP.SIM.HighDim_Personal_A_SHAP;
+D{5}.SHAP_BASE = DATA_SHAP.SIM.HighDim_Personal_A_SHAP_BASE;
+D{5}.str = "Sim. (High dim.)";
+D{5}.target = "Agreeableness";
+D{5}.feature = F.high_p(:,[3,4]);
+% mean(DATA_SHAP.EMP.LowDim_Personal_C_R_TEST(:,3))
+% mean(DATA_SHAP.SIM.LowDim_Personal_C_R_TEST(:,3))
+% mean(DATA_SHAP.SIM.HighDim_Personal_C_R_TEST(:,3)) -> best
+D{4}.SHAP = DATA_SHAP.SIM.HighDim_Personal_C_SHAP;
+D{4}.SHAP_BASE = DATA_SHAP.SIM.HighDim_Personal_C_SHAP_BASE;
+D{4}.str = "Sim. (High dim.)";
+D{4}.target = "Conscientiousness";
+D{4}.feature = F.high_p(:,[3,4]);
+% mean(DATA_SHAP.EMP.LowDim_Personal_E_R_TEST(:,3))
+% mean(DATA_SHAP.SIM.LowDim_Personal_E_R_TEST(:,3))
+% mean(DATA_SHAP.SIM.HighDim_Personal_E_R_TEST(:,3)) -> best
+D{3}.SHAP = DATA_SHAP.SIM.HighDim_Personal_E_SHAP;
+D{3}.SHAP_BASE = DATA_SHAP.SIM.HighDim_Personal_E_SHAP_BASE;
+D{3}.str = "Sim. (High dim.)";
+D{3}.target = "Extraversion";
+D{3}.feature = F.high_p(:,[3,4]);
+% mean(DATA_SHAP.EMP.LowDim_Personal_N_R_TEST(:,3))
+% mean(DATA_SHAP.SIM.LowDim_Personal_N_R_TEST(:,3))
+% mean(DATA_SHAP.SIM.HighDim_Personal_N_R_TEST(:,3)) -> best but negative correlation
+D{2}.SHAP = DATA_SHAP.SIM.HighDim_Personal_N_SHAP;
+D{2}.SHAP_BASE = DATA_SHAP.SIM.HighDim_Personal_N_SHAP_BASE;
+D{2}.str = "Sim. (High dim.)";
+D{2}.target = "Neuroticism";
+D{2}.feature = F.high_p(:,[3,4]);
+% mean(DATA_SHAP.EMP.LowDim_Personal_O_R_TEST(:,3)) -> best
+% mean(DATA_SHAP.SIM.LowDim_Personal_O_R_TEST(:,3))
+% mean(DATA_SHAP.SIM.HighDim_Personal_O_R_TEST(:,3))
+D{1}.SHAP = DATA_SHAP.EMP.LowDim_Personal_O_SHAP;
+D{1}.SHAP_BASE = DATA_SHAP.EMP.LowDim_Personal_O_SHAP_BASE;
+D{1}.str = "Emp.";
+D{1}.target = "Openness";
+D{1}.feature = F.low_p(:,[1,2]);
+
+% Blank figure
+% ------------
+fig = figure(6);clf;set(gcf,'Color','w','Position',[1,1,1000,500],'Name','Figure 6: SHAP values');
+
+dy = [1,-1]*0.18;
+tick_y = [];
+temp_ax = axes(fig);
+temp_ax.Units = 'normalized';
+hold(temp_ax,'on');
+line(temp_ax,[0,0],[0.3,7.7],'Color',[1,1,1]*0.7,'LineStyle','--','LineWidth',2);
+for nTask = 1:numel(D)
+    temp_shap = D{nTask}.SHAP;
+    temp_shap(:,3) = D{nTask}.SHAP(:,3) + 1; % the first value is 1
+    temp_base = D{nTask}.SHAP_BASE;
+    temp_feature = D{nTask}.feature;
+    SHAP_MEAN = nan(size(temp_feature,1),2);
+    PREDICTOR = nan(size(SHAP_MEAN));
+    for nSbj = 1:size(SHAP_MEAN,1)
+        lgc = temp_shap(:,3) == nSbj;
+        SHAP_MEAN(nSbj,:) = mean(temp_shap(lgc,[4,5]),1);
+        PREDICTOR(nSbj,:) = D{nTask}.feature(nSbj,:);
+    end
+    for nAtl = 1:2
+        line(temp_ax,[-1,1]*5,[1,1]*(nTask+dy(nAtl)),'Color',[1,1,1]*0.7,'LineStyle',':','LineWidth',1);
+        text(temp_ax,-4.8,nTask+dy(nAtl),sprintf('%.02f',mean(abs(SHAP_MEAN(:,nAtl)))),'FontSize',16,'FontWeight','normal','HorizontalAlignment','left','VerticalAlignment','middle');
+        [x] = ksj_violin_scatter(SHAP_MEAN(:,nAtl),nTask,21,0.22,0);
+        scatter(temp_ax,SHAP_MEAN(:,nAtl),x+dy(nAtl),20,PREDICTOR(:,nAtl),'filled','Marker','o','MarkerFaceAlpha',0.6,'MarkerEdgeColor','none','LineWidth',1);
+        colormap(temp_ax,"jet");
+        clim(temp_ax,[0.1,0.8]);
+        tick_y = [tick_y,nTask+dy(nAtl)*-1];
+    end
+    annotation(fig,'textbox', [0.15,0.17+(nTask-1)*(0.76/7),0.2,0.01],'string',D{nTask}.str,'edgecolor','none','fontsize',14,'fontweight','n','horizontalalignment','center','VerticalAlignment','middle');
+    annotation(fig,'textbox', [0.01,0.17+(nTask-1)*(0.76/7),0.2,0.01],'string',D{nTask}.target,'edgecolor','none','fontsize',18,'fontweight','b','horizontalalignment','left','VerticalAlignment','middle');
+end
+annotation(fig,'textbox', [0.15,0.9,0.2,0.01],'string','Best predictor','edgecolor','none','fontsize',16,'fontweight','b','horizontalalignment','center','VerticalAlignment','middle');
+annotation(fig,'textbox', [0.42,0.88,0.1,0.01],'string','$mean(|$SHAP$|)$','edgecolor','none','fontsize',16,'fontweight','n','horizontalalignment','left','VerticalAlignment','middle','Interpreter','latex');
+% annotation(fig,'textbox', [0.30,0.88,0.1,0.01],'string','Atlas','edgecolor','none','fontsize',14,'fontweight','n','horizontalalignment','right','VerticalAlignment','middle');
+ylim(temp_ax,[0.3,7.7]);
+xlim(temp_ax,[-1,1]*5);
+set(temp_ax,'FontSize',14,'FontWeight','normal');
+set(temp_ax,'YTick',tick_y,'YTickLabel',{'Harvard-Oxford','Schaefer'},'FontSize',14,'FontWeight','normal');
+xlabel(temp_ax,'SHAP values','FontSize',16,'FontWeight','normal');
+grid(temp_ax,"off");
+temp_ax.Position = [0.42,0.1,0.5,0.8];
+hcb = colorbar(temp_ax);
+hcb.Position = [0.93,0.1,0.01,0.8];
+hcb.Ticks = -1.0:0.1:1.0;
+hcb.Limits = [0.099,0.8];
+hcb.FontSize = 12;
+hcb.Label.String = 'Connectome relationship (predictor)';
+hcb.Label.FontSize = 16;
+
+% Save
+set(fig,'Resize','on','PaperPositionMode','auto','PaperUnits','points','PaperSize',fig.Position([3,4]) + 1);drawnow;
+% saveas(fig,'./figure6.pdf');
